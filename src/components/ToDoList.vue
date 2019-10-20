@@ -1,49 +1,42 @@
 <template>
-  <div>
-    <p class="tasks">Completed Tasks: {{todos.filter(todo => {return todo.done === true}).length}}</p>
-    <p class="tasks">Pending Tasks: {{todos.filter(todo => {return todo.done === false}).length}}</p>
-    <to-do v-on:delete-todo="deleteTodo" v-on:complete-todo="completeTodo" v-for="(todo, index) in todos" v-bind:key="index" v-bind:todo="todo"></to-do>
+  <div id="homeToDoList">
+    <div id="mainNavbar">
+      <h1>{{ msg }}</h1>
+    </div>
+    <div id="contentToDoList" class="container">
+      <get-todo></get-todo>
+      <div class="row">
+        <div class="flex-6">
+          <current-todos></current-todos>
+        </div>
+        <div class="flex-6">
+          <completed-todos></completed-todos>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
-<script type="text/javascript" >
+<script type="text/javascript">
 /* eslint-disable */
-import sweetalert from 'sweetalert';
-import ToDo from './ToDo';
-
-export default {
-  props: ['todos'],
-  components: {
-    ToDo
-  },
-  methods: {
-    deleteTodo(todo) {
-      sweetalert({
-        title: 'Are you sure?',
-        text: 'This To-Do will be permanently deleted!',
-        type: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#DD6B55',
-        confirmButtonText: 'Yes, delete it!',
-        closeOnConfirm: false,
-      },
-      () => {
-        const todoIndex = this.todos.indexOf(todo);
-        this.todos.splice(todoIndex, 1);
-        sweetalert('Deleted!', 'Your To-Do has been deleted.', 'success');
-      });
+  import axios from 'axios'
+  import GetTodo from './GetTodo.vue'
+  import CurrentTodos from './CurrentTodos.vue'
+  import CompletedTodos from './CompletedTodos.vue'
+  export default {
+    components: {
+      GetTodo,
+      CurrentTodos,
+      CompletedTodos
     },
-    completeTodo(todo) {
-      const todoIndex = this.todos.indexOf(todo);
-      this.todos[todoIndex].done = true;
-      sweetalert('Success!', 'To-Do completed!', 'success');
+    data() {
+      return {
+        msg: 'Welcome to my ToDoList Web App'
+      };
     },
-  },
-};
+    mounted() {
+      // for call all data from jsonplaceholder
+      this.$store.dispatch('getAllTodo')
+    }
+  }
 </script>
-
-<style scoped>
-p.tasks {
-  text-align: center;
-}
-</style>
